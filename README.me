@@ -1,0 +1,21 @@
+Модуль определения региона по IP-адресу для HostCMS v.6
+Модуль добавляет в систему функциональность по определению региона пользователя на основании его IP-адреса.
+Для опредления используется сервис ipgeobase.ru, за некорректное определение региона разработчик модуля ответственности не несет.
+Сервис ipgeobase.ru предоставляе информацию, главным образом, об ip-адреса России и Украины.
+Пример кода для вызова модуля:
+
+<?
+$sIp = Core_Array::get($_SERVER, 'REMOTE_ADDR', Core_Array::get($_SERVER, 'HTTP_X_FORWARDED_FOR', '127.0.0.1'));
+echo 'Ваш IP ' . $sIp;
+$oGeoData = Core_Geoip::instance()->getGeoData($sIp);
+if (!is_null($oGeoData))
+{
+    echo 'Ваш город ' . Core_Entity::factory('Shop_Country_Location_City', $oGeoData->cityId)->name;
+    echo 'Ваш регион ' . Core_Entity::factory('Shop_Country_Location', $oGeoData->locationId)->name;
+    echo 'Ваша страна ' . Core_Entity::factory('Shop_Country', $oGeoData->countryId)->name;
+}
+else
+{
+    echo 'Для вашего IP определить регион не удалось';
+}
+?>
